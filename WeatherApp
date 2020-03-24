@@ -1,0 +1,72 @@
+import tkinter as tk
+from tkinter import font
+import requests
+
+
+
+HEIGHT = 500
+WIDTH = 400
+
+# c58b38c5918e896e3987deddda861d2b
+
+# pro.openweathermap.org/data/2.5/forecast/hourly?q={city name}&appid={your api key} pro.openweathermap.org/data/2.5/forecast/hourly?q={city name},{state}&appid={your api key} pro.openweathermap.org/data/2.5/forecast/hourly?q={city name},{state},{country code}&appid={your api key}
+def format_response(weather):
+    try:
+        name = weather['name']
+        desc = weather['weather'][0]['description']
+        temp = weather['main']['temp']
+
+        final_str = 'City: %s \nConditions: %s \nTemperature (*F): %s' % (name, desc, temp)
+    except:
+        final_str = 'There was a problem retrieving that information'
+
+    return final_str
+
+
+
+def get_weather(city):
+    weather_key = 'c58b38c5918e896e3987deddda861d2b'
+    url = 'https://api.openweathermap.org/data/2.5/weather'
+    params = {'APPID': weather_key, 'q': city, 'units': 'imperial'}
+    response = requests.get(url, params=params)
+    weather = response.json()
+
+    label['text'] = format_response(weather)
+
+
+
+
+
+
+# The actual window everything is in
+root = tk.Tk()
+root.minsize(width=WIDTH, height=HEIGHT)
+root.maxsize(width=WIDTH, height=HEIGHT)
+
+# Is used to draw shapes, such as lines, ovals in your app
+canvas = tk.Canvas(root)
+canvas.pack()
+
+# The 'window' inside the window. Contains other widgets
+frame = tk.Frame(root, bg='#1E3562')
+frame.place(width=WIDTH, height=HEIGHT)
+
+# Button
+button = tk.Button(root, text="What's the Weather?", bg='grey', fg='white', command=lambda: get_weather(entry.get()))
+button.place(relx=0.5, rely=0.5, anchor='center')
+
+# Display
+label = tk.Label(frame, text='YOUR WEATHER IN:', bg='white', relief='raised', font=('Courier', 20))
+label.place(relx=0.17, rely=0.12, relwidth=0.65, relheight=0.25)
+
+# Will display results
+label = tk.Label(frame, bg='white', relief='raised', font=('Courier', 13))
+label.place(relx=0.5, rely=0.58, relwidth=0.75, relheight=0.4, anchor='n')
+
+# Where you type
+entry = tk.Entry(frame, bg='white', font=('Courier', 9))
+entry.place(relx=0.34, rely=0.42)
+
+print(tk.font.families())
+
+root.mainloop()
